@@ -19,7 +19,7 @@ class Exam:
 
     def __month(self):
         month_number = self.date.month - 1
-        months = ["January", "Feburary", "March", "April", "May", "June", "July",
+        months = ["January", "February", "March", "April", "May", "June", "July",
                   "August", "September", "October", "November", "December"]
         return months[month_number]
 
@@ -62,6 +62,7 @@ class Exam:
         remaining = self.date - Exam.Today
         remaining = timedelta(seconds=int(remaining.total_seconds()))
         return remaining
+
 
 
 ENGLISH_PAPER_1: Exam = Exam("English Paper 1", datetime(2022, 10, 19,12+2))
