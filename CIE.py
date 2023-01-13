@@ -2,6 +2,8 @@ from datetime import timedelta, datetime
 from os import system
 from time import sleep
 from tkinter import *
+from termcolor import cprint
+
 
 
 class Exam:
@@ -13,9 +15,10 @@ class Exam:
 
     Today = datetime.now()
 
-    def __init__(self, name: str, date: datetime):
+    def __init__(self, name: str, date: datetime,time:timedelta):
         self.name = name
         self.date = date
+        self.time = time
 
     def __month(self):
         month_number = self.date.month - 1
@@ -58,58 +61,87 @@ class Exam:
         Exam.Today = datetime.now()
         return self.date < Exam.Today
 
-    def check_remaining(self):
+    def check_remaining(self,other=None):
         Exam.Today = datetime.now()
         remaining = self.date - Exam.Today
-        remaining = timedelta(seconds=int(remaining.total_seconds()))
+
+        
         if remaining.days>10:
-            self.color="white"
+            self.color="cyan"
         elif remaining.days>7:
             self.color = "yellow"
         elif remaining.days>4:
-            self.color = "orange"
-        else:
+            self.color = "blue"
+        elif remaining.days>=0:
             self.color='red'
+        else:
+            self.color="green"
+
+        if other:
+            remaining = self.date - (other.time + other.date)
+
+        remaining = timedelta(seconds=int(remaining.total_seconds()))
+
+        if self.completed():
+            return "EXAM COMPLETED"
+
         return remaining
 
 
-ENGLISH_PAPER_1: Exam = Exam("English Paper 1", datetime(2022, 10, 19,12+2))
-ENGLISH_PAPER_2: Exam = Exam("English Paper 2", datetime(2022, 10, 26,12+2))
-MATHEMATICS_PURE: Exam = Exam("Pure Mathmatics 1", datetime(2022, 10, 10,12+2))
-MATHEMATICS_STATS: Exam = Exam("Statstistics  1", datetime(2022, 10, 17,12+2))
-COMPUTER_PAPER_1: Exam = Exam("Computer Paper 1", datetime(2022, 10, 13,10))
-COMPUTER_PAPER_2: Exam = Exam("Computer Paper 2", datetime(2022, 10, 21,10))
+ENGLISH_PAPER_1: Exam = Exam("English Paper 1", datetime(2022, 10, 19,12+2),timedelta(hours=2,minutes=15))
+ENGLISH_PAPER_2: Exam = Exam("English Paper 2", datetime(2022, 10, 26,12+2),timedelta(hours=2))
+MATHEMATICS_PURE: Exam = Exam("Pure Mathmatics 1", datetime(2022, 10, 10,12+2),timedelta(hours=1,minutes=50))
+MATHEMATICS_STATS: Exam = Exam("Statstistics  1", datetime(2022, 10, 17,12+2), timedelta(hours=1,minutes=15))
+COMPUTER_PAPER_1: Exam = Exam("Computer Paper 1", datetime(2022, 10, 13,10), timedelta(hours=1,minutes=30))
+COMPUTER_PAPER_2: Exam = Exam("Computer Paper 2", datetime(2022, 10, 21,10), timedelta(hours=2))
 
 Exams: list[Exam] = [ENGLISH_PAPER_1, ENGLISH_PAPER_2, MATHEMATICS_PURE,
                      MATHEMATICS_STATS, COMPUTER_PAPER_1, COMPUTER_PAPER_2]
 
 Exams.sort(key=lambda x: x.date)
+Completed = list(filter(lambda exam: exam.completed(), Exams))
+Exams = list(filter(lambda exam: not exam.completed(), Exams))
+
+
+
+              ###MAIN###
 
 if __name__ == "__main__":
-
-    next_exam = list(filter(lambda exam: not exam.completed(), Exams))[0]
-    next_exam.create_ui()
-    next_exam.display()
+    GUI, CLI = False, True
+    if GUI:
+        next_exam = Exams[0]
+        next_exam.create_ui()
+        next_exam.display()
 
     #print('',*Exams, sep='\n',end='\n'*2)
     print("\nExams List:\n")
     error = False
-    GUI, CLI = True, False
     while not error:
-        for exam in Exams:
-            if not exam.completed():
-                if CLI:
-                    text = str(exam)+"\t" + \
-                        f"{exam.check_remaining()} days remaining"
-                    print(text, end='\n')
-                if GUI:
-                    try:
-                        next_exam.update()
-                    except:
-                        error = True
-                        break
+        for index,exam in enumerate(Completed+Exams):
+
+            if index >= len(Completed):
+                check = exam.check_remaining(prev_exam)
+                msg = f"after {check} days of\t {prev_exam.name}"
+            else:
+                check = exam.check_remaining()
+                if isinstance(check,str):
+                    msg = check
+                else:
+                    msg = f"{check} days remaining"
+                
+
+            if CLI:
+                text = str(exam)+"\t" + msg
+                cprint(text,color=exam.color, end='\n')
+            if GUI:
+                try:
+                    next_exam.update()
+                except:
+                    error = True
+                    break
                 # print('\b'*len(text),end='')
                 # sleep(3)
+            prev_exam=exam
         sleep(1)
         system('clear')
 
