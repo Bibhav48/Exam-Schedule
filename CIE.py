@@ -66,8 +66,8 @@ class Exam:
 
 ENGLISH_PAPER_1: Exam = Exam("English Paper 1", datetime(2022, 10, 19,12+2))
 ENGLISH_PAPER_2: Exam = Exam("English Paper 2", datetime(2022, 10, 26,12+2))
-MATHEMATICS_PURE: Exam = Exam("Pure Mathmatics 1", datetime(2022, 10, 10,12+2))
-MATHEMATICS_STATS: Exam = Exam("Statstistics  1", datetime(2022, 10, 17,12+2))
+MATHEMATICS_PURE: Exam = Exam("Pure Mathematic 1", datetime(2022, 10, 10,12+2))
+MATHEMATICS_STATS: Exam = Exam("Statistics  1", datetime(2022, 10, 17,12+2))
 COMPUTER_PAPER_1: Exam = Exam("Computer Paper 1", datetime(2022, 10, 13,10))
 COMPUTER_PAPER_2: Exam = Exam("Computer Paper 2", datetime(2022, 10, 21,10))
 
